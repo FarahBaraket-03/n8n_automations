@@ -1,0 +1,216 @@
+{
+  "name": "CheckingCalendarWorkFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a helpful calendar assistant. You can check availability and retrieve events from Google Calendar. When users ask about dates, use the calendar tools to get the information. Always specify date ranges clearly when using the tools.\n\nTodays date is: {{ $now }}",
+          "maxIterations": 10,
+          "passthroughBinaryImages": true,
+          "batching": {},
+          "enableStreaming": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        -64
+      ],
+      "id": "71f2ccf2-c734-43db-8141-61636bee3cf4",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "=mistral",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        112
+      ],
+      "id": "20d1ea73-3006-4607-a44f-947624246cc6",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pv3Ow9mpciaJ95x3",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        160
+      ],
+      "id": "4f87126d-db78-4d43-a7ee-7227375d5d9e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "fbaraket48@gmail.com",
+          "mode": "list",
+          "cachedResultName": "fbaraket48@gmail.com"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', `Start date for availability check`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', `End date for availability check`, 'string') }}",
+        "options": {
+          "timezone": {
+            "__rl": true,
+            "value": "Africa/Tunis",
+            "mode": "list",
+            "cachedResultName": "Africa/Tunis"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        160
+      ],
+      "id": "42c237f6-39f1-414b-9fbb-733c18a938af",
+      "name": "find availability",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "gJvOVg0nSWqsMwX7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -464,
+        -16
+      ],
+      "id": "8992609f-eaf4-4bc4-ab4a-57a77433e2cb",
+      "name": "chat",
+      "webhookId": "68719994-46d4-4730-b9a7-afdd55c1a828"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "fbaraket48@gmail.com",
+          "mode": "list",
+          "cachedResultName": "fbaraket48@gmail.com"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', `Start date for events search`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', `end date for events search`, 'string') }}",
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "Africa/Tunis",
+            "mode": "list",
+            "cachedResultName": "Africa/Tunis"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        160
+      ],
+      "id": "d65b759a-d397-4f1f-932d-786bb095bab2",
+      "name": "Get events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "gJvOVg0nSWqsMwX7",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "find availability": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chat": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "cf7f816f-936c-440f-bf41-d642be6a3a98",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7ce5f35e8bf4d3524ce45d1451b92ecc078f466420854017d41bcfc371e6a25b"
+  },
+  "id": "j9TrYjjXcyrMePNW",
+  "tags": []
+}

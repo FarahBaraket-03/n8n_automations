@@ -1,0 +1,140 @@
+{
+  "name": "Workflow3_AI_Agent_Chat",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3adc5921-f7ba-4f55-a9a7-1022640e0d54",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        256,
+        128
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "780e4f74-f485-4777-9d28-dc3fa7e0e541",
+      "name": "SerpAPI",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "position": [
+        384,
+        128
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "serpApi": {
+          "id": "20AnzvdfcQUg5PM4",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2611645f-2c3b-4516-9325-0ea14a369b5b",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -176,
+        -96
+      ],
+      "webhookId": "53c136fe-3e77-4709-a143-fe82746dd8b6",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6f429582-9937-4780-b375-e8817ee36ceb",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        144,
+        -96
+      ],
+      "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "model": "mistral:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        96,
+        96
+      ],
+      "id": "05fb6217-f57c-4bb3-bee5-cf831de2a1bc",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pv3Ow9mpciaJ95x3",
+          "name": "Ollama account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4d46ce5b-d38c-40b6-a2af-e65d07dc9acc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7ce5f35e8bf4d3524ce45d1451b92ecc078f466420854017d41bcfc371e6a25b"
+  },
+  "id": "9lFIKVkahfCH9vbR",
+  "tags": []
+}

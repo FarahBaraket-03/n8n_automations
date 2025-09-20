@@ -1,0 +1,566 @@
+{
+  "name": "lookingAtCompanys",
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "URL_list",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -48
+      ],
+      "id": "5863fa26-6174-44a7-9f39-b752677eb62c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "9501df1c-441f-4a90-88f4-283611a72af5",
+      "name": "Loop Over Items",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.peopledatalabs.com/v5/company/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "size",
+              "value": "1"
+            },
+            {
+              "name": "sql",
+              "value": "={{ \"SELECT * FROM company WHERE website = '\" + $json.URL_list.trim()+ \"';\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        96,
+        48
+      ],
+      "id": "2e79281f-62f8-4a4e-9189-26ab8f72bc9f",
+      "name": "HTTP Request",
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "JrUwGj7qNFAa1fCQ",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "Error on PDL enricherment"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -48
+      ],
+      "id": "c8234299-ef52-4100-a1ee-7f1282d2cc36",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "Name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        976,
+        -288
+      ],
+      "id": "6f6567b1-6018-471b-a338-62d5a2b2219c",
+      "name": "Summarize",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09FYH26SFQ",
+          "mode": "list",
+          "cachedResultName": "canal_n8n"
+        },
+        "text": "={{ \"nb of company that in europe is \"+$json.count_Name }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        -288
+      ],
+      "id": "7d0d4fc9-2764-4954-84ac-db7e230fd82f",
+      "name": "Send a message",
+      "webhookId": "f367b88b-be55-43de-a4a2-a91ae5025958",
+      "alwaysOutputData": true,
+      "credentials": {
+        "slackApi": {
+          "id": "OIfZ2WZepuRn75Eh",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Submit URL Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -768,
+        -48
+      ],
+      "id": "788d83ee-f0fc-4e1b-84b5-a05b6058dc9b",
+      "name": "Form n8n",
+      "webhookId": "ceffd73a-6d13-4fbd-ad78-3aeaa941e2be"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18ed8203-a775-40c5-a5f6-642f085974fe",
+              "name": "URL_list",
+              "value": "={{ $json.URL.split(\",\") }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        -48
+      ],
+      "id": "411430ff-1edb-4894-8739-4feed07ec3f3",
+      "name": "Edit Field URL"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9409dd4d-67f9-46f2-ab58-4df0a4811432",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        48
+      ],
+      "id": "929241e7-643c-4731-bff3-63a40d39f382",
+      "name": "If status of HTTP"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2609052f-0615-453e-af47-b22cc142715e",
+              "name": "name",
+              "value": "={{ $json.data[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "1dd340f3-2da1-4882-b6d0-2a90750a0cfa",
+              "name": "employees",
+              "value": "={{ $json.data[0].employee_count }}",
+              "type": "number"
+            },
+            {
+              "id": "4b862ae1-48c9-4b5c-be2e-5f4dd6872541",
+              "name": "country",
+              "value": "={{ $json.data[0].location.country }}",
+              "type": "string"
+            },
+            {
+              "id": "791b4616-c85a-40bb-adb0-3643e1b9ede8",
+              "name": "continent",
+              "value": "={{ $json.data[0].location.continent }}",
+              "type": "string"
+            },
+            {
+              "id": "e955b5af-e465-483e-a7d2-1c1cf7d7e8a6",
+              "name": "funding",
+              "value": "={{ $json.data[0].total_funding_raised }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        -240
+      ],
+      "id": "4afc30a1-13c0-4702-96a1-48aed229e67e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "42286587-4c0a-4508-a0c7-719d3d2e94c8",
+              "leftValue": "={{ $json.continent }}",
+              "rightValue": "=europe",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -240
+      ],
+      "id": "4eef6771-e875-455d-abf9-9fa431e04f7d",
+      "name": "If company in europe",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1RjsQXstGB4rMKwIhz4Mr2QDUGBfUOO65ltxjleyGY_I",
+          "mode": "list",
+          "cachedResultName": "Company Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RjsQXstGB4rMKwIhz4Mr2QDUGBfUOO65ltxjleyGY_I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RjsQXstGB4rMKwIhz4Mr2QDUGBfUOO65ltxjleyGY_I/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.name }}",
+            "Employees": "={{ $json.employees }}",
+            "Country": "={{ $json.country }}",
+            "Funding": "={{ $json.funding }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employees",
+              "displayName": "Employees",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Funding",
+              "displayName": "Funding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        -288
+      ],
+      "id": "4b968d5d-5c95-417c-8da3-34374d8f2e75",
+      "name": "Append rows in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aFxNDHb9KOZKHVNb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n\n### - enter list URL of  company  and seperate each one with **\" , \"**\n### - and then we split them so that we loop each URL ",
+        "height": 336,
+        "width": 768,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "5505fbca-b08f-40d4-a206-22c192a60e73",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### then we get fields that we need like : \n* name\n* nb of emp\n* location\n* ..",
+        "height": 320,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "15e94e4b-fe17-4648-a8ec-bcfca7b9e09c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "### **after filter we add in our google sheet**\n\n### **and send msg using slack that we finished and other informations**",
+        "height": 320,
+        "width": 640,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "7bd3d642-d428-40e6-9e83-a7513fa45a10",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If status of HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form n8n": {
+      "main": [
+        [
+          {
+            "node": "Edit Field URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Field URL": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If status of HTTP": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If company in europe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If company in europe": {
+      "main": [
+        [
+          {
+            "node": "Append rows in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append rows in sheet": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "85645e1f-9be0-4ea8-9c84-005ababb8aa5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7ce5f35e8bf4d3524ce45d1451b92ecc078f466420854017d41bcfc371e6a25b"
+  },
+  "id": "cE5d5iE1hVa1kJ4Y",
+  "tags": []
+}
