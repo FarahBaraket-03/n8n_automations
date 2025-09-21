@@ -1,8 +1,7 @@
 # 🔄 n8n_automations
 
-
 ![AI Agent](https://img.shields.io/badge/Ollama-Local_AI-blue?style=for-the-badge&logo=ollama)
-[![n8n](https://img.shields.io/badge/Automation-n8n-orange?logo=n8n&logoColor=white)](https://n8n.io)
+[![n8n](https://img.shields.io/badge/Automation-n8n-orange?style=for-the-badge&logo=n8n&logoColor=white)](https://n8n.io)
 
 
 This repository contains a collection of n8n automation templates . These templates are designed to help automate a wide range of tasks and workflows using [n8n](https://n8n.partnerlinks.io/h1pwwf5m4toe) , making it easier to use platforms and services.
