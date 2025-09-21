@@ -7,11 +7,11 @@
 This repository contains a collection of n8n automation . These are designed to help automate a wide range of tasks and workflows using [n8n](https://n8n.partnerlinks.io/h1pwwf5m4toe) , making it easier to use platforms and services.
 
 
-### Gmail & Email Automation
+### 📧 Gmail & Email Automation
 
 | Title | Description | Department | Link |
 |-------|-------------|------------|------|
-|Analyze Suspicious Email Contents with ChatGPT Vision	Uses both text and image analysis (ChatGPT Vision) to evaluate suspicious emails.| Extracts screenshots, analyzes headers and content, and flags phishing attempts. | Security |  [Link to Template](./) |
+|Analyze Suspicious Email Contents with ollama	Uses both text and image analysis to evaluate suspicious emails.| Extracts screenshots, analyzes headers and content, and flags phishing attempts. | Security |  [Link to Template](./Gmail%20%26%20Email%20Automation/email_analysis.json) |
 
 
 ### 🗄️ Database & Storage
